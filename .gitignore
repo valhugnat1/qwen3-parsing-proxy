@@ -4,4 +4,4 @@ __pycache__/
 .venv/
 .vscode/
 .idea/
-.DS_Store
+.DS_Store.env
