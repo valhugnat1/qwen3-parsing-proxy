@@ -17,17 +17,14 @@ def load_config() -> Settings:
     load_dotenv()  # Load environment variables from .env file
 
     # Prioritize Fireworks API key if set, otherwise use OpenAI key
-    api_key = os.getenv("FIREWORKS_API_KEY") or os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("PROVIDER_API_KEY") 
     # Use Fireworks base URL if its key is set and no base URL is explicitly defined
-    base_url = os.getenv("OPENAI_BASE_URL")
-    if not base_url and os.getenv("FIREWORKS_API_KEY"):
+    base_url = os.getenv("PROVIDER_BASE_URL")
+    if not base_url and os.getenv("PROVIDER_API_KEY"):
          base_url = "https://api.fireworks.ai/inference/v1"
     elif not base_url:
         base_url = "https://api.openai.com/v1" # Default if nothing else specified
 
-    # Note: We initialize Settings directly here which might seem redundant
-    # with Pydantic's built-in .env loading, but it allows prioritizing
-    # FIREWORKS_API_KEY and its default URL correctly.
     return Settings(
         openai_base_url=base_url,
         openai_api_key=api_key,

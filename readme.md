@@ -67,10 +67,10 @@ cp .env.example .env
 
 ```dotenv
 # Required
-FIREWORKS_API_KEY=your_fireworks_api_key_here
+PROVIDER_BASE_URL=https:/yourprovider.com/v1
+PROVIDER_API_KEY=
 
 # Optional
-# OPENAI_API_KEY=your_openai_api_key_here
 # HOST=0.0.0.0
 # PORT=8000
 ```
