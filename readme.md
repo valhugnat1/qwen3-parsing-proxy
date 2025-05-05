@@ -1,4 +1,4 @@
-# OpenAI Proxy with Tool & Think Tag Parsing ✨
+# Qwen3 Proxy with Tool & Think Tag Parsing ✨
 
 This project provides a FastAPI-based proxy server that sits in front of an OpenAI-compatible API (like OpenAI itself, Fireworks AI, etc.). Its primary purpose is to intercept chat completion responses and parse specific XML-like tags (`<tool_call>` and `<think>`) within the content, transforming them into structured data compliant with the OpenAI API specification, while also supporting standard streaming and non-streaming responses.
 
