@@ -82,3 +82,131 @@ FIREWORKS_API_KEY=your_fireworks_api_key_here
 # HOST=127.0.0.1
 # PORT=8001# qwen3-parsing-proxy
 # qwen3-parsing-proxy
+
+Running the Application
+
+Start the server using Uvicorn:
+Bash
+
+python main.py
+
+The server will start on the configured host and port (default: http://0.0.0.0:8000).
+
+For development, you can enable auto-reloading:
+Bash
+
+uvicorn main:app --reload --host <your_host> --port <your_port>
+# Example: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+Usage
+
+Send requests to the /v1/chat/completions (or /chat/completions) endpoint of your running proxy server, just like you would with the OpenAI API.
+
+Example Request (Non-Streaming):
+Bash
+
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $YOUR_API_KEY" \
+  -d '{
+    "model": "accounts/fireworks/models/firefunction-v1", # Or your desired model
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant with access to functions."},
+      {"role": "user", "content": "What is the weather like in Metz, France?"}
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "get_current_weather",
+          "description": "Get the current weather in a given location",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "location": {
+                "type": "string",
+                "description": "The city and state/country, e.g. San Francisco, CA"
+              },
+              "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]}
+            },
+            "required": ["location"]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto"
+  }'
+
+If the model responds with:
+
+Thinking about the request... <think>User wants weather in Metz, France. I have the get_current_weather tool.</think> Okay, I can look that up. <tool_call>{ "name": "get_current_weather", "arguments": { "location": "Metz, France", "unit": "celsius" } }</tool_call>
+
+The proxy will return:
+JSON
+
+{
+  "id": "...",
+  "object": "chat.completion",
+  "created": ...,
+  "model": "...",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Okay, I can look that up.", // Tags removed
+        "tool_calls": [ // Structured tool call added
+          {
+            "id": "call_...",
+            "type": "function",
+            "function": {
+              "name": "get_current_weather",
+              "arguments": "{\"location\": \"Paris, France\", \"unit\": \"celsius\"}" // Arguments as JSON string
+            }
+          }
+        ],
+        "reasoning_content": "User wants weather in Metz, France. I have the get_current_weather tool." // Extracted think content
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls" // Finish reason updated
+    }
+  ],
+  "usage": { ... },
+  "system_fingerprint": "..."
+}
+
+Example Request (Streaming):
+Bash
+
+curl -N http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $YOUR_API_KEY" \
+  -d '{
+    "model": "accounts/fireworks/models/firefunction-v1",
+    "messages": [
+      {"role": "user", "content": "Call the dummy function."}
+    ],
+    "tools": [ ... ], # Include tools if needed
+    "stream": true
+  }'
+
+The proxy will stream back Server-Sent Events, parsing tags and generating appropriate deltas for content and tool calls as they arrive.
+Project Structure
+
+.
+├── .env                  # Environment variables
+├── requirements.txt      # Python dependencies
+├── main.py               # Main application entry point
+└── app/
+    ├── api/              # API endpoint definitions (FastAPI routers)
+    ├── core/             # Core components (config, client init)
+    ├── models/           # Pydantic data models
+    └── services/         # Business logic (tag parsing, streaming, API handling)
+
+Technology Stack
+
+    FastAPI: Web framework
+    Pydantic: Data validation and settings management
+    OpenAI Python SDK: Interacting with the downstream API
+    Uvicorn: ASGI server
+    python-dotenv: Loading environment variables
