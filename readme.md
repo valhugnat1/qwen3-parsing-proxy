@@ -82,6 +82,7 @@ FIREWORKS_API_KEY=your_fireworks_api_key_here
 # HOST=127.0.0.1
 # PORT=8001# qwen3-parsing-proxy
 # qwen3-parsing-proxy
+```
 
 Running the Application
 
