@@ -60,15 +60,9 @@ Configuration is managed via a `.env` file in the project root.
 
 2.  **Edit the `.env` file:**
 
-    * **`OPENAI_API_KEY` or `FIREWORKS_API_KEY` (Required):**
+    * **`FIREWORKS_API_KEY` (Required):**
         * Provide *at least one* of these API keys.
         * If `FIREWORKS_API_KEY` is set, it will be used. Otherwise, `OPENAI_API_KEY` will be used.
-
-    * **`OPENAI_BASE_URL` (Optional):**
-        * The base URL of the OpenAI-compatible API.
-        * If not set, it defaults to `https://api.fireworks.ai/inference/v1` if `FIREWORKS_API_KEY` is provided.
-        * If neither `FIREWORKS_API_KEY` nor `OPENAI_BASE_URL` are set, it defaults to `https://api.openai.com/v1`.
-        * If set explicitly, this value will always be used.
 
     * **`HOST` (Optional):**
         * The host address to bind the server to.
@@ -83,11 +77,6 @@ Configuration is managed via a `.env` file in the project root.
 ```dotenv
 # Use Fireworks AI
 FIREWORKS_API_KEY=your_fireworks_api_key_here
-# OPENAI_BASE_URL=[https://api.fireworks.ai/inference/v1](https://api.fireworks.ai/inference/v1) # Optional, inferred if FIREWORKS_API_KEY is set
-
-# Or Use OpenAI
-# OPENAI_API_KEY=sk-your_openai_api_key_here
-# OPENAI_BASE_URL=[https://api.openai.com/v1](https://api.openai.com/v1) # Optional, default if using OPENAI_API_KEY
 
 # Optional Server Config
 # HOST=127.0.0.1
